@@ -18,7 +18,7 @@ HEIGHT = 400
 TITLE = "Angry Birds Demo"
 GRAVITY = -500
 MAX_DRAG_DISTANCE = 100
-SLING_POS = Point2D(140, 75)
+SLING_POS = Point2D(160, 30)
 
 class App(arcade.View):
     def __init__(self):
@@ -34,7 +34,7 @@ class App(arcade.View):
         floor_shape.friction = 100
         self.space.add(floor_body, floor_shape)
 
-        self.game_level = 3
+        self.game_level = 5
         self.set_initial_position = True
 
         self.birds = arcade.SpriteList()
@@ -45,7 +45,7 @@ class App(arcade.View):
         self.add_pigs()
         self.add_birds()
 
-        self.sling = Sling(0.65, 150, 30, self.space)
+        self.sling = Sling(0.65, SLING_POS.x, SLING_POS.y, self.space)
         self.world.append(self.sling)
 
         self.start_point = Point2D()
@@ -140,11 +140,10 @@ class App(arcade.View):
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT and self.birds:
-            self.start_point = Point2D(140, 75)
+            self.start_point = Point2D(SLING_POS.x - 10, SLING_POS.y + 45)
             self.end_point = Point2D(x, y)
             self.draw_line = True
             
-            # self.current_birds.append(self.birds[0])
             ##logger.debug(f"Start drag with bird at: {self.start_point}")
 
     def on_mouse_drag(self, x: int, y: int, dx: int, dy: int, buttons: int, modifiers: int):
@@ -191,11 +190,11 @@ class App(arcade.View):
         if self.current_birds:
             self.current_birds.draw()
             if self.set_initial_position:
-                self.current_birds[0].set_position(125, 48)
+                self.current_birds[0].set_position(SLING_POS.x - 25, SLING_POS.y + 18)
                 self.set_initial_position = False
         if self.draw_line:
-            arcade.draw_line(self.start_point.x, self.start_point.y, self.end_point.x, self.end_point.y, arcade.color.DARK_BROWN, 3)
-            arcade.draw_line(self.start_point.x - 35, self.start_point.y, self.end_point.x, self.end_point.y, arcade.color.DARK_BROWN, 3)
+            arcade.draw_line(SLING_POS.x - 10, SLING_POS.y + 45, self.end_point.x, self.end_point.y, arcade.color.DARK_BROWN, 3)
+            arcade.draw_line(SLING_POS.x - 42, SLING_POS.y + 45, self.end_point.x, self.end_point.y, arcade.color.DARK_BROWN, 3)
 
 class StartView(arcade.View):
     def __init__(self):
