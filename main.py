@@ -4,7 +4,7 @@ import arcade
 import pymunk
 
 from game_object import Bird, RedBird, BlueBird, YellowBird, Column, Pig, Sling
-from game_logic import ImpulseVector, get_impulse_vector, Point2D, get_distance
+from game_logic import get_impulse_vector, Point2D, get_distance
 
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger("arcade").setLevel(logging.WARNING)
@@ -16,13 +16,14 @@ logger = logging.getLogger("main")
 WIDTH = 900
 HEIGHT = 400
 TITLE = "Angry Birds Demo"
-GRAVITY = -700
-MAX_DRAG_DISTANCE = 80
+GRAVITY = -500
+MAX_DRAG_DISTANCE = 100
 SLING_POS = Point2D(140, 75)
 
 class App(arcade.View):
     def __init__(self):
         super().__init__()
+        self.flying_bird = None
         self.background = arcade.load_texture("assets/img/background.png")
         self.space = pymunk.Space()
         self.space.gravity = (0, GRAVITY)
@@ -34,10 +35,12 @@ class App(arcade.View):
         self.space.add(floor_body, floor_shape)
 
         self.game_level = 3
+        self.set_initial_position = True
 
         self.birds = arcade.SpriteList()
         self.pigs = arcade.SpriteList()
         self.world = arcade.SpriteList()
+        self.current_birds = arcade.SpriteList()
         self.add_columns()
         self.add_pigs()
         self.add_birds()
@@ -49,7 +52,6 @@ class App(arcade.View):
         self.end_point = Point2D()
         self.distance = 0
         self.draw_line = False
-        self.started = False
         self.ended = False
 
         # agregar un collision handler
@@ -61,7 +63,7 @@ class App(arcade.View):
         if impulse_norm < 100:
             return True
         ##logger.debug(impulse_norm)
-        if impulse_norm > 1200:
+        if impulse_norm > 1000:
             for pig in self.pigs:
                 if pig.shape in arbiter.shapes:
                     self.pigs.remove(pig)
@@ -74,11 +76,12 @@ class App(arcade.View):
         red_bird = RedBird(*initial_data)
         blue_bird = BlueBird(*initial_data) 
         yellow_bird = YellowBird(*initial_data) 
-        self.birds.append(red_bird) 
-        self.birds.append(blue_bird) 
+        self.birds.append(blue_bird)
+        self.birds.append(red_bird)
         self.birds.append(yellow_bird)
 
-        self.world.append(red_bird)
+        self.set_initial_position = True
+        self.current_birds.append(self.birds[0])
 
     def add_columns(self):
         spacing = max(100, 300 - self.game_level * 40)
@@ -105,7 +108,7 @@ class App(arcade.View):
                 try:
                     self.space.remove(sprite.shape, sprite.body)
                 except Exception:
-                    pass  # static objects might not have shape/body
+                    pass
                 if sprite in self.world:
                     self.world.remove(sprite)
                 if sprite in self.pigs:
@@ -126,19 +129,28 @@ class App(arcade.View):
     def on_key_press(self, symbol, modifiers):
         if symbol == arcade.key.ESCAPE:
             arcade.close_window()
+        elif symbol == arcade.key.SPACE and self.flying_bird:
+            if not self.flying_bird.has_used_power:
+                self.flying_bird.power_up()
+
+                for bird in self.flying_bird.birds:
+                    self.world.append(bird)
+                    self.birds.append(bird)
+                ##logger.debug(f"Bird {self.flying_bird.__class__.__name__} used its power-up")
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if button == arcade.MOUSE_BUTTON_LEFT:
+        if button == arcade.MOUSE_BUTTON_LEFT and self.birds:
             self.start_point = Point2D(140, 75)
             self.end_point = Point2D(x, y)
             self.draw_line = True
-            #logger.debug(f"Start Point: {self.start_point}")
+            
+            # self.current_birds.append(self.birds[0])
+            ##logger.debug(f"Start drag with bird at: {self.start_point}")
 
     def on_mouse_drag(self, x: int, y: int, dx: int, dy: int, buttons: int, modifiers: int):
-        if buttons == arcade.MOUSE_BUTTON_LEFT:
+        if buttons == arcade.MOUSE_BUTTON_LEFT and self.birds:
             raw_point = Point2D(x, y)
 
-            # distance to sling
             dist = get_distance(SLING_POS, raw_point)
             if dist > MAX_DRAG_DISTANCE:
                 angle = math.atan2(raw_point.y - SLING_POS.y, raw_point.x - SLING_POS.x)
@@ -148,33 +160,42 @@ class App(arcade.View):
             else:
                 self.end_point = raw_point
 
-            #if self.birds:
-            #   bird = self.birds[0]
-            #  bird.body.position = (self.end_point.x, self.end_point.y)
-                #logger.debug(f"Dragging to: {self.end_point}")
+            if self.birds and self.current_birds:
+                self.current_birds[0].set_position(self.end_point.x, self.end_point.y)
 
     def on_mouse_release(self, x: int, y: int, button: int, modifiers: int):
-        if button == arcade.MOUSE_BUTTON_LEFT:
-            logger.debug(f"Releasing from: {self.end_point}")
+        if button == arcade.MOUSE_BUTTON_LEFT and self.birds:
+            #logger.debug(f"Releasing bird from: {self.end_point}")
             self.draw_line = False
+            
+            impulse_vector = get_impulse_vector(self.end_point, self.start_point)
+            if self.birds and self.current_birds:
+                self.current_birds[0].impulse_vector = impulse_vector
+                self.current_birds[0].launch(impulse_vector)
+            
+            self.world.append(self.current_birds[0])
+            self.flying_bird = self.current_birds[0]
+            self.birds.pop(0)
+            
+            self.current_birds.pop()
+
             if self.birds:
-                impulse_vector = get_impulse_vector(self.end_point, self.start_point)
-                bird = self.birds[0]
-                bird.launch(impulse_vector)
-                self.birds.pop(0)
-                self.world.append(self.birds[0])
+                self.current_birds.append(self.birds[0])
+            self.set_initial_position = True
 
     def on_draw(self):
         self.clear()
         arcade.draw_texture_rect(self.background, arcade.LRBT(0, WIDTH, 0, HEIGHT))
-        if self.started:
-            pass
-        else:
-            self.pigs.draw()
-            self.world.draw()
-            if self.draw_line:
-                arcade.draw_line(self.start_point.x, self.start_point.y, self.end_point.x, self.end_point.y, arcade.color.DARK_BROWN, 3)
-                arcade.draw_line(self.start_point.x - 35, self.start_point.y, self.end_point.x, self.end_point.y, arcade.color.DARK_BROWN, 3)
+        self.pigs.draw()
+        self.world.draw()
+        if self.current_birds:
+            self.current_birds.draw()
+            if self.set_initial_position:
+                self.current_birds[0].set_position(125, 48)
+                self.set_initial_position = False
+        if self.draw_line:
+            arcade.draw_line(self.start_point.x, self.start_point.y, self.end_point.x, self.end_point.y, arcade.color.DARK_BROWN, 3)
+            arcade.draw_line(self.start_point.x - 35, self.start_point.y, self.end_point.x, self.end_point.y, arcade.color.DARK_BROWN, 3)
 
 class StartView(arcade.View):
     def __init__(self):
@@ -193,6 +214,8 @@ class StartView(arcade.View):
         self.sprites.draw()
 
     def on_key_press(self, symbol, modifiers):
+        if symbol == arcade.key.ESCAPE:
+               arcade.close_window()
         if symbol == arcade.key.SPACE:
             game_view = App()
             self.window.show_view(game_view)
