@@ -38,7 +38,7 @@ class Bird(arcade.Sprite):
         self.shape = None
         self.in_physics_space = False
         self.has_used_power = False
-        self.impulse_vector = None 
+        self.impulse_vector: ImpulseVector
 
     def add_to_physics_space(self):
         if self.in_physics_space:
@@ -79,6 +79,9 @@ class Bird(arcade.Sprite):
         self.center_y = y
         if self.in_physics_space and self.body:
             self.body.position = (x, y)
+
+    def power_up(self):
+        pass
 
 class RedBird(Bird):
     def __init__(self, x: float, y: float, space: pymunk.Space):
@@ -152,9 +155,6 @@ class Pig(arcade.Sprite):
 
 
 class PassiveObject(arcade.Sprite):
-    """
-    Passive object that can interact with other objects.
-    """
     def __init__(
         self,
         image_path: str,
@@ -188,6 +188,10 @@ class PassiveObject(arcade.Sprite):
 class Column(PassiveObject):
     def __init__(self, x, y, space):
         super().__init__("assets/img/column.png", x, y, space)
+
+class Beam(PassiveObject):
+    def __init__(self, x, y, space):
+        super().__init__("assets/img/beam.png", x, y, space)
 
 class StaticObject(arcade.Sprite):
     def __init__(
