@@ -115,7 +115,7 @@ class YellowBird(Bird):
 
     def power_up(self):
         if not self.has_used_power and self.in_physics_space and self.body:
-            boost = 1.5
+            boost = 1.4
             current_velocity = self.body.velocity
             self.body.velocity = (current_velocity.x * boost, current_velocity.y * boost)
             self.has_used_power = True

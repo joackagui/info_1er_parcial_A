@@ -57,7 +57,7 @@ class App(arcade.View):
         self.ended = False
 
         # Cooldown de 1 segundo para evitar clicks fantasma
-        self.cooldown = 1.0
+        self.cooldown = 0.5
         self.time_since_start = 0.0
 
         # Handler de colisiones
@@ -138,13 +138,10 @@ class App(arcade.View):
         pass
 
     def on_show_view(self):
-        # Cargar la música principal
         self.music = arcade.load_sound("assets/msc/game-music.mp3")
-        # Reproducir en bucle
         self.music_player = arcade.play_sound(self.music, loop=True, volume=0.5)
 
     def on_hide_view(self):
-        # Detener la música al salir de la vista
         if self.music_player:
             arcade.stop_sound(self.music_player)
 
@@ -257,9 +254,13 @@ class StartView(arcade.View):
         self.background = arcade.load_texture("assets/img/background.png")
         self.play_button = arcade.Sprite("assets/img/play-button.png", scale=0.3)
         self.play_button.center_x = WIDTH // 2
-        self.play_button.center_y = HEIGHT // 2
+        self.play_button.center_y = 130
+        self.title = arcade.Sprite("assets/img/angry-birds-logo.png", scale=0.3)
+        self.title.center_x = WIDTH // 2
+        self.title.center_y = HEIGHT - 100
         self.button_list = arcade.SpriteList()
         self.button_list.append(self.play_button)
+        self.button_list.append(self.title)
 
     def on_draw(self):
         self.clear()
@@ -267,13 +268,10 @@ class StartView(arcade.View):
         self.button_list.draw()
 
     def on_show_view(self):
-        # Cargar la música principal
         self.music = arcade.load_sound("assets/msc/main-theme.mp3")
-        # Reproducir en bucle
         self.music_player = arcade.play_sound(self.music, volume=0.5)
 
     def on_hide_view(self):
-        # Detener la música al salir de la vista
         if self.music_player:
             arcade.stop_sound(self.music_player)
 
