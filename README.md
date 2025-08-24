@@ -1,54 +1,83 @@
-# Infografia - Universidad Privada Boliviana 1er parcial A
+# Angry Birds Demo
 
-## Descripción
+Este es un **proyecto académico** que recrea una versión simplificada del clásico juego **Angry Birds** usando **Python**, **Arcade** y **Pymunk**.
+El objetivo es lanzar pájaros con un tirachinas para derribar estructuras y eliminar a los cerdos de cada nivel.
 
-Este repositorio contiene el código base para el proyecto de tipo A.
+## Características principales
 
-Este proyecto implementa la funcionalidad base del videojuego Angry Birds. El proyecto contiene código para la mecánica fundamental y los objetos necesarios. Usted deberá completar el código fuente e implementar funcionalidades adicionales.
+* **Gráficos 2D** usando la librería Arcade.
+* **Física realista** usando Pymunk.
+* **Sonidos y música** para mejorar la experiencia de juego.
+* **Seis niveles** jugables con diferentes estructuras y desafíos.
+* **Tres pájaros** diferentes con habilidades únicas:
 
-## Instrucciones
+  * **Red Bird** → Pájaro estándar.
+  * **Blue Bird** → Se divide en tres al presionar `ESPACIO`.
+  * **Yellow Bird** → Aumenta su velocidad con `ESPACIO`.
 
-Para ejecutar el programa de arcade:
+---
 
-1. Clone (o forkee) el repositorio en un directorio local.
-2. Abra la carpeta completa con Visual Studio code.
-3. Ejecute el archivo main.py.
+## Requisitos previos
 
-Siga las instrucciones para la implementación de la evaluación.
+Antes de ejecutar el proyecto, asegúrate de tener instalado:
 
-### Implementación de mecánicas faltantes
+* **Python 3.10+** (https://www.python.org/downloads/)
+* **uv** para tener un entorno virtual.
 
-La primera parte refiere a la implementación de mecánicas faltantes, en específico, usted deberá implementar las siguientes funciones en el archivo `game_logic.py`:
+## Instalación y ejecución
 
- - `get_angle_radians`: Esta funcion recibe 2 puntos (Point2D) y devuelve el ángulo entre los mismos en radianes.
- - `get_distance`: Esta función recibe 2 puntos y devuelve la distancia en pixeles entre ambos puntos.
- - `get_impulse_vector`: Usando las funciones anteriores, esta función recibe 2 puntos y devuelve un vector de impulso (ImpulseVector) con el ángulo y el valor del impulso.
+Sigue estos pasos:
 
-La implementación de las funciones restantes completa la mecánica básica del lanzamiento de un angry bird. Una vez terminada la implementación pruebe y valide el funcionamiento del proyecto. Luego de validar el funcionamiento, pase a la siguiente sección.
+### 1. Clonar el repositorio
 
-### Implementación de características adicionales
+Abre una terminal o CMD y ejecuta:
 
-Una vez completada la implementación de la mecánica principal, usted deberá implementar las siguientes características como nuevas clases en el archivo `game_object.py`:
+```bash
+git clone https://github.com/joackagui/info_1er_parcial_A.git
+```
 
-#### Yellow bird
+### 2. Entrar en la carpeta del proyecto
 
-Si el usuario hace clic izquierdo mientras el Yellow Bird está en vuelo, el mismo incrementará su impulso en la dirección en la que está apuntando por un multiplicador aplicado al impulso inicial. El multiplicador estará definido como un argumento al método de inicialización y deberá tener un valor de 2 por defecto.
+```bash
+cd info_1er_parcial_A
+```
 
-#### Blue bird
+### 3. Crear un entorno virtual (opcional pero recomendado)
 
-Si el usuario hace clic izquierdo mientras el blue bird está en vuelo, éste se convertirá en 3 blue birds instantáneamente, cada uno con una separación de dirección de 30 grados. Por ejemplo, si en el momento del clic el blue bird tiene una dirección de -10 grados, los 3 blue birds resultantes deberán tener direcciones de 20, -10 y -40 grados respectivamente. La velocidad deberá mantenerse para los 3 pájaros.
+```bash
+uv venv --seed -p 3.12
 
-#### (Extra) Implementación de niveles
+.venv\Scripts\activate
+```
 
-La lógica de lanzamiento y destrucción de objetos está implementada en el código base. Como un extra, usted podrá implementar la lógica de gestión de niveles en base a un puntaje mínimo a alcanzar.
+### 4. Instalar las dependencias
 
-### Envío del código
+```bash
+pip install arcade pymunk
+```
 
-Usted deberá enviar un enlace a un repositorio de github que solamente contendrá el código del proyecto en cuestión. Se recomienda que, para salvar inconvenientes con GIT, usted realice un fork de este repositorio en su propia cuenta, y luego clone el fork a su directorio local. 
+### 5. Ejecutar el juego
 
-Una vez finalizadas las tareas, se deberá enviar un email por grupo con los siguientes datos:
+Se puede presionar en la flecha de play de arriba a la derecha o ejecutar el sigueinte código:
 
- - Destinatario: eduardo.laruta+tareas@gmail.com
- - Asunto: 1era Evaluacion parcial Infografia
- - Contenido: Nombres y códigos de los integrantes y el enlace al repositorio de GitHub
+```bash
+python main.py
+```
 
+---
+
+## Controles del juego
+
+| Acción                       | Tecla / Botón                                |
+| ---------------------------- | -------------------------------------------- |
+| Apuntar y lanzar             | Arrastrar con **click izquierdo**            |
+| Activar habilidad especial   | `ESPACIO`                                    |
+| Cambiar de nivel             | Hacer click desde el **selector de niveles** |
+| Volver a la pantalla inicial | `ESC` en el juego                            |
+| Cerrar el juego              | `ESC` en el menú inicial                     |
+
+## **Autor**
+
+**Nombre:** Joaquín Aguilera
+
+**Año:** 2025

@@ -1,5 +1,6 @@
 import math
 import logging
+import random
 import arcade
 import pymunk
 
@@ -114,9 +115,12 @@ class App(arcade.View):
         red_bird = RedBird(*initial_data)
         blue_bird = BlueBird(*initial_data)
         yellow_bird = YellowBird(*initial_data)
-        self.birds.append(blue_bird)
-        self.birds.append(red_bird)
-        self.birds.append(yellow_bird)
+        birds = [red_bird, blue_bird, yellow_bird]
+        # Poner los pájaros de forma aleatoria
+        random.shuffle(birds)
+
+        for bird in birds: self.birds.append(bird)
+            
         self.draw_sling_bird = True
         self.bird_on_sling = self.birds[0]
 
@@ -293,17 +297,14 @@ class App(arcade.View):
                 self.result_timer = 0.0
 
     def on_mouse_motion(self, x, y, dx, dy):
-        if self.show_end_buttons:
-            arcade.draw_sprite(self.replay_button)
-            arcade.draw_sprite(self.menu_button)
-            if self.level_won:
-                arcade.draw_sprite(self.next_level_button)
+        check_button_resize(self.replay_button, x, y, 0.15, 0.20)
+        check_button_resize(self.next_level_button, x, y, 0.15, 0.20)
+        check_button_resize(self.menu_button, x, y, 0.15, 0.20)
 
-
-    # Key-buttons para regresar y usar el power-up
     def on_key_press(self, symbol, modifiers):
         if symbol == arcade.key.ESCAPE:
             self.window.show_view(LevelSelectView(self.game_level))
+        ## Usar el power-up
         elif symbol == arcade.key.SPACE and self.flying_bird:
             if not self.flying_bird.has_used_power:
                 self.flying_bird.power_up()

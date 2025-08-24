@@ -102,7 +102,7 @@ class BlueBird(Bird):
                 clone = BlueBird(self.center_x, self.center_y + position, self.space)
                 clone.add_to_physics_space()
                 
-                angle_variation = 0.2 if position > 0 else -0.2
+                angle_variation = 0.3 if position > 0 else -0.3
                 modified_impulse = ImpulseVector(
                     self.impulse_vector.angle + angle_variation,
                     self.impulse_vector.impulse * 0.8
