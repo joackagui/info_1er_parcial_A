@@ -7,21 +7,23 @@ class Bird(arcade.Sprite):
         self,
         image_path: str,
         image_scale: float,
+        flying_sound: str,
         x: float,
         y: float,
         space: pymunk.Space,
         mass: float = 5,
         radius: float = 12,
         max_impulse: float = 180,
-        power_multiplier: float = 35,
         elasticity: float = 0.8,
         friction: float = 1,
-        collision_layer: int = 0
+        collision_layer: int = 0,
     ):
         super().__init__(image_path, image_scale)
         self.birds = arcade.SpriteList()
         self.center_x = x
         self.center_y = y
+
+        self.flying_sound = arcade.load_sound(flying_sound)        
         
         self.space = space
         self.mass = mass
@@ -30,7 +32,7 @@ class Bird(arcade.Sprite):
         self.friction = friction
         self.collision_layer = collision_layer
         self.max_impulse = max_impulse
-        self.power_multiplier = power_multiplier
+        self.power_multiplier = 35
         
         self.body = None
         self.shape = None
@@ -80,14 +82,14 @@ class Bird(arcade.Sprite):
 
 class RedBird(Bird):
     def __init__(self, x: float, y: float, space: pymunk.Space):
-        super().__init__("assets/img/red-bird.png", 1, x, y, space, 4.5)
+        super().__init__("assets/img/red-bird.png", 1, "assets/msc/red-bird-flying.mp3", x, y, space, 4.5)
 
     def power_up(self):
         pass
 
 class BlueBird(Bird):
     def __init__(self, x: float, y: float, space: pymunk.Space):
-        super().__init__("assets/img/blue-bird.png", 0.1, x, y, space, 4.5)
+        super().__init__("assets/img/blue-bird.png", 0.1, "assets/msc/blue-bird-flying.mp3", x, y, space, 4.5)
         
     def power_up(self):
         if not self.has_used_power and self.impulse_vector:
@@ -109,13 +111,13 @@ class BlueBird(Bird):
 
 class YellowBird(Bird):
     def __init__(self, x: float, y: float, space: pymunk.Space):
-        super().__init__("assets/img/yellow-bird.png", 0.035, x, y, space, 4.5)
+        super().__init__("assets/img/yellow-bird.png", 0.035, "assets/msc/yellow-bird-flying.mp3", x, y, space, 4.5)
 
     def power_up(self):
         if not self.has_used_power and self.in_physics_space and self.body:
-            boost_factor = 2.0
+            boost = 1.5
             current_velocity = self.body.velocity
-            self.body.velocity = (current_velocity.x * boost_factor, current_velocity.y * boost_factor)
+            self.body.velocity = (current_velocity.x * boost, current_velocity.y * boost)
             self.has_used_power = True
 
 class Pig(arcade.Sprite):
@@ -140,6 +142,8 @@ class Pig(arcade.Sprite):
         space.add(body, shape)
         self.body = body
         self.shape = shape
+
+        self.death_sound = arcade.load_sound("assets/msc/pig-death.mp3")
 
     def update(self, delta_time):
         self.center_x = self.shape.body.position.x
